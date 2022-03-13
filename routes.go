@@ -2,49 +2,38 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/ahmedkhaeld/rest-api/entity"
+	"github.com/ahmedkhaeld/rest-api/repository"
+	"math/rand"
 	"net/http"
 )
 
-type Post struct {
-	Id    int    `json:"id"`
-	Title string `json:"title"`
-	Text  string `json:"text"`
-}
-
 var (
-	posts []Post
+	repo repository.PostRepository = repository.NewPostRepository()
 )
 
-func init() {
-	posts = []Post{Post{Id: 1, Title: "Title1", Text: "Text 1"}}
+func getPosts(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	posts, err := repo.FindAll()
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{"error": "Error getting the posts"}`))
+	}
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(posts)
 }
 
-func getPosts(resp http.ResponseWriter, req *http.Request) {
-	resp.Header().Set("Content-Type", "application/json")
-	result, err := json.Marshal(posts)
+func addPost(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	var post entity.Post
+	err := json.NewDecoder(request.Body).Decode(&post)
 	if err != nil {
-		resp.WriteHeader(http.StatusInternalServerError)
-		resp.Write([]byte(`{"error": "Error marshalling the posts"}`))
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{"error": "Error unmarshalling data"}`))
 		return
 	}
-	resp.WriteHeader(http.StatusOK)
-	resp.Write(result)
-
-}
-
-func addPost(resp http.ResponseWriter, req *http.Request) {
-	resp.Header().Set("Content-Type", "application/json")
-	var post Post
-	err := json.NewDecoder(req.Body).Decode(&post)
-	if err != nil {
-		resp.WriteHeader(http.StatusInternalServerError)
-		resp.Write([]byte(`{"error": "Error unmarshalling the request"}`))
-		return
-	}
-	post.Id = len(posts) + 1
-	posts = append(posts, post)
-	resp.WriteHeader(http.StatusOK)
-	result, err := json.Marshal(post)
-	resp.Write(result)
-
+	post.ID = rand.Int63()
+	repo.Save(&post)
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(post)
 }
