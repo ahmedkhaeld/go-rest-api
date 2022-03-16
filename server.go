@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	postRepository = repository.NewFirestoreRepository()
+	postRepository = repository.NewSQLiteRepository()
 	postService    = service.NewPostService(postRepository)
 	postController = controller.NewPostController(postService)
-	httpRouter     = router.NewChiRouter()
+	httpRouter     = router.NewMuxRouter()
 )
 
 func main() {
