@@ -1,0 +1,14 @@
+{
+
+  "id": 1,
+  "brand": "Mitsubishi",
+  "model": "Montero",
+  "model_year": 2002,
+  "vin": "SAJWJ0FF3F8321657",
+
+
+  "owner_firstname": "ahmed",
+  "owner_lastname": "khaled",
+  "owner_email": "me@her.net",
+  "owner_job_title": "CS graduate"
+}

@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"github.com/ahmedkhaeld/rest-api/controller"
 	router "github.com/ahmedkhaeld/rest-api/http"
-	"github.com/ahmedkhaeld/rest-api/repository"
 	"github.com/ahmedkhaeld/rest-api/service"
 	"net/http"
 )
 
 var (
-	postRepository = repository.NewFirestoreRepository()
-	postService    = service.NewPostService(postRepository)
-	postController = controller.NewPostController(postService)
-	httpRouter     = router.NewChiRouter()
+	carDetailsService    service.CarDetailsService       = service.NewCarDetailsService()
+	carDetailsController controller.CarDetailsController = controller.NewCarDetailsController(carDetailsService)
+	httpRouter           router.Router                   = router.NewChiRouter()
 )
 
 func main() {
@@ -23,8 +21,7 @@ func main() {
 		fmt.Fprintln(w, "Up and running...")
 	})
 
-	httpRouter.GET("/posts", postController.GetPosts)
-	httpRouter.POST("/posts", postController.AddPost)
+	httpRouter.GET("/carDetails", carDetailsController.GetCarDetails)
 
 	httpRouter.SERVE(port)
 }
