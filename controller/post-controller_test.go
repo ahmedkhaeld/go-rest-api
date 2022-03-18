@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/ahmedkhaeld/rest-api/cache"
 	"github.com/ahmedkhaeld/rest-api/entity"
 	"github.com/ahmedkhaeld/rest-api/repository"
 	"github.com/ahmedkhaeld/rest-api/service"
@@ -22,7 +23,8 @@ const (
 var (
 	postRepo       = repository.NewSQLiteRepository()
 	postSrv        = service.NewPostService(postRepo)
-	postController = NewPostController(postSrv)
+	postCh         = cache.NewRedisCache("localhost:6379", 0, 10)
+	postController = NewPostController(postSrv, postCh)
 )
 
 func TestAddPost(t *testing.T) {
